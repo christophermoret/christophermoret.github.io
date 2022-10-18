@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping list</title>
+
+    <style>
+        * {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #itemsToBuy {
+            border: solid;
+            padding: 100px;
+            width: 250px;
+        }
+
+        body {
+            background-color: rgb(170, 200, 233);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <h1 id="title">Welcome to your shopping list</h1>
+        <h2>Please enter item:</h2>
+        <input type="text" id="itemInput" value="">
+        <input type="Button" id="addButton" value="Add to list">
+        <input type="Button" id="removeButton" value="Delete last item">
+        <input type="Button" id="deleteAll" value="Delete all">
+        <h2>Items to buy:</h2>
+        <div id="itemsToBuy"></div>
+    </div>
+
+    <script>
+        //Constants
+        const main = document.getElementsByClassName("main");
+        const itemInput = document.getElementById("itemInput");
+        const itemsToBuy = document.getElementById("itemsToBuy");
+        const addButton = document.getElementById("addButton");
+        const removeButton = document.getElementById("removeButton");
+        const deleteAllButton = document.getElementById("deleteAll");
+        const storageValues = localStorage.getItem("Storage");
+
+        //Event listeners
+        addButton.addEventListener("click", addItem);
+        removeButton.addEventListener("click", removeLastItem);
+        deleteAllButton.addEventListener("click", deleteAll);
+
+        //Functions
+        function addItem() {
+            const newItem = document.createElement("p");
+            newItem.className = "newItem";
+            newItem.innerText = itemInput.value;
+            itemsToBuy.appendChild(newItem);
+            //Local storage
+            if (localStorage.getItem("Storage") == null) {
+                localStorage.setItem("Storage", itemInput.value);
+                location.reload();
+            } else {
+                const oldValue = localStorage.getItem("Storage");
+                const newValue = oldValue + "," + itemInput.value;
+                localStorage.setItem("Storage", newValue.split(","));
+                location.reload();
+            }
+        }
+
+        function removeLastItem() {
+            const items = document.getElementsByClassName("newItem");
+            if (items.length > 0) {
+                const lastPosition = items.length - 1;
+                itemsToBuy.removeChild(items[lastPosition]);
+            }
+            //Local storage
+            const list = storageValues.split(",");
+            const lastPosition = list.length - 1;
+            list.pop();
+            localStorage.removeItem("Storage");
+            localStorage.setItem("Storage", list);
+            location.reload();
+        }
+
+        function deleteAll() {
+            const items = document.getElementsByClassName("newItem");
+            for (i = 0; i < items.length;) {
+                itemsToBuy.removeChild(items[0]);
+            }
+            localStorage.clear();
+            location.reload();
+        }
+
+        function loadList() {
+            const values = storageValues.split(",");
+            if (localStorage.length > 0) {
+                for (let x in values) {
+                    const newItem = document.createElement("p");
+                    newItem.className = "newItem";
+                    newItem.innerText = values[x];
+                    itemsToBuy.appendChild(newItem);
+                }
+            }
+        }
+
+        //Run functions
+        loadList();
+    </script>
+</body>
+
+</html>
